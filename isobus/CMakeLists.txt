@@ -45,7 +45,8 @@ set(ISOBUS_SRC
     "isobus_heartbeat.cpp"
     "nmea2000_message_definitions.cpp"
     "nmea2000_message_interface.cpp"
-    "can_message_data.cpp")
+    "can_message_data.cpp"
+    "isobus_file_server_client.cpp")
 
 # Prepend the source directory path to all the source files
 prepend(ISOBUS_SRC ${ISOBUS_SRC_DIR} ${ISOBUS_SRC})
@@ -93,7 +94,9 @@ set(ISOBUS_INCLUDE
     "nmea2000_message_definitions.hpp"
     "nmea2000_message_interface.hpp"
     "isobus_preferred_addresses.hpp"
-    "can_message_data.hpp")
+    "can_message_data.hpp"
+    "isobus_file_server_client.hpp")
+
 # Prepend the include directory path to all the include files
 prepend(ISOBUS_INCLUDE ${ISOBUS_INCLUDE_DIR} ${ISOBUS_INCLUDE})
 
