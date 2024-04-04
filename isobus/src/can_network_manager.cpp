@@ -39,6 +39,9 @@ namespace isobus
 		{
 			get_next_can_message_from_tx_queue();
 		}
+
+		//! @todo: Remove this unsafe way of making a shared pointer to the network manager once the network manager is no longer a singleton
+		messageHandler.set_messaging_provider(std::shared_ptr<CANNetworkManager>(this));
 		initialized = true;
 	}
 
@@ -459,6 +462,11 @@ namespace isobus
 	EventDispatcher<std::shared_ptr<InternalControlFunction>> &CANNetworkManager::get_address_violation_event_dispatcher()
 	{
 		return addressViolationEventDispatcher;
+	}
+
+	CANMessageHandler &CANNetworkManager::get_can_message_handler()
+	{
+		return messageHandler;
 	}
 
 	bool CANNetworkManager::add_protocol_parameter_group_number_callback(std::uint32_t parameterGroupNumber, CANLibCallback callback, void *parentPointer)
@@ -1052,6 +1060,7 @@ namespace isobus
 			heartBeatInterfaces.at(currentMessage.get_can_port_index())->process_rx_message(currentMessage);
 			process_protocol_pgn_callbacks(currentMessage);
 			process_any_control_function_pgn_callbacks(currentMessage);
+			messageHandler.process_rx_message(currentMessage);
 
 			// Update Others
 			process_can_message_for_global_and_partner_callbacks(currentMessage);
@@ -1064,6 +1073,8 @@ namespace isobus
 		while (!transmittedMessageQueue.empty())
 		{
 			CANMessage currentMessage = get_next_can_message_from_tx_queue();
+
+			messageHandler.process_tx_message(currentMessage);
 
 			// Update listen-only callbacks
 			messageTransmittedEventDispatcher.call(currentMessage);
@@ -1120,6 +1131,7 @@ namespace isobus
 		process_can_message_for_global_and_partner_callbacks(message);
 		process_any_control_function_pgn_callbacks(message);
 		process_can_message_for_commanded_address(message);
+		messageHandler.process_rx_message(message);
 	}
 
 } // namespace isobus
